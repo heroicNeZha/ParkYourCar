@@ -16,7 +16,7 @@
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context="com.lhaojing.park.ParkItemFragment"
+    tools:context="com.lhaojing.park.View.ParkItemFragment"
     tools:listitem="@layout/park_item">
     </android.support.v7.widget.RecyclerView>
 

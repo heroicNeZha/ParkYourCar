@@ -1,4 +1,4 @@
-package com.lhaojing.park;
+package com.lhaojing.park.View;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,7 +6,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.lhaojing.park.ParkItemFragment.OnListFragmentInteractionListener;
+import com.lhaojing.park.View.ParkItemFragment.OnListFragmentInteractionListener;
+import com.lhaojing.park.R;
 import com.lhaojing.park.dummy.DummyContent.DummyItem;
 
 import java.util.List;

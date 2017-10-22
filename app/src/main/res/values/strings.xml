@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Park</string>
     <string name="title_activity_location">LocationActivity</string>
+    <string name="error_network">网络错误!</string>
+    <string name="error_key">验证无效!</string>
+    <string name="error_other">未知错误</string>
+    <string name="no_result">对不起,没有找到数据</string>
 </resources>

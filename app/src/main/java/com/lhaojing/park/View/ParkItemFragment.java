@@ -1,4 +1,4 @@
-package com.lhaojing.park;
+package com.lhaojing.park.View;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -10,10 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.lhaojing.park.R;
 import com.lhaojing.park.dummy.DummyContent;
 import com.lhaojing.park.dummy.DummyContent.DummyItem;
-
-import java.util.List;
 
 /**
  * A fragment representing a list of Items.

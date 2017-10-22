@@ -26,9 +26,10 @@
             android:value="17da4748e79fa036ae0729fe0935054a" />
 
         <activity
-            android:name=".LocationActivity"
+            android:name=".View.LocationActivity"
             android:label="@string/title_activity_location"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:configChanges="orientation|keyboardHidden|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
