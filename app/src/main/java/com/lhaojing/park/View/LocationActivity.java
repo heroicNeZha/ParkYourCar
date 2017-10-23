@@ -25,6 +25,12 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.maps.model.Poi;
+import com.amap.api.navi.AmapNaviPage;
+import com.amap.api.navi.AmapNaviParams;
+import com.amap.api.navi.AmapNaviType;
+import com.amap.api.navi.INaviInfoCallback;
+import com.amap.api.navi.model.AMapNaviLocation;
 import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
@@ -36,7 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class LocationActivity extends AppCompatActivity implements
-        PoiSearch.OnPoiSearchListener {
+        PoiSearch.OnPoiSearchListener , INaviInfoCallback{
 
     private static final String TAG = "LocationActivity";
     //地图
@@ -47,10 +53,8 @@ public class LocationActivity extends AppCompatActivity implements
     private PoiSearch.Query query;
     private PoiSearch poiSearch;
     //驾车路线
-    private RouteSearch routeSearch;
-    private int drivingMode = RouteSearch.DRIVING_SINGLE_DEFAULT;
-    private LatLonPoint startPoint = null;
-    private LatLonPoint endPoint = null;
+    private LatLng startLatlng = null;
+    private Poi targetPoi = null;
 
     private boolean isCameraSet;
     private boolean isFirstIndex;
@@ -67,7 +71,9 @@ public class LocationActivity extends AppCompatActivity implements
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                findPark();
+                Poi start = new Poi("我的位置", startLatlng, "");
+                if(targetPoi!=null)
+                AmapNaviPage.getInstance().showRouteActivity(getApplicationContext(), new AmapNaviParams(start, null, targetPoi, AmapNaviType.DRIVER), LocationActivity.this);
             }
         });
 
@@ -119,7 +125,7 @@ public class LocationActivity extends AppCompatActivity implements
 
         @Override
         public boolean onMarkerClick(Marker marker) {
-            endPoint = new LatLonPoint(marker.getPosition().latitude,marker.getPosition().longitude);
+            targetPoi = new Poi(marker.getTitle(),marker.getPosition(),"");
             return false;
         }
     };
@@ -133,18 +139,16 @@ public class LocationActivity extends AppCompatActivity implements
 //        transaction.commit();
 
         int index = 0;
-        LatLng nowLatlng = new LatLng(startPoint.getLatitude(),startPoint.getLongitude());
         for (PoiItem pi:poiResult.getPois()) {
             index ++;
             LatLng targetLatLng = new LatLng(pi.getLatLonPoint().getLatitude(),pi.getLatLonPoint().getLongitude());
             MarkerOptions mo =  new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
-                            .decodeResource(getResources(),R.drawable.ic_place_black_24dp)))
                     .position(targetLatLng)
                     .title(pi.getTitle())
-                    .snippet( String.format("%.1f米 %s",AMapUtils.calculateLineDistance(nowLatlng,targetLatLng), pi.getSnippet()));
+                    .snippet( String.format("据您%.1f米\n%s",AMapUtils.calculateLineDistance(startLatlng,targetLatLng), pi.getSnippet()));
             if(!isFirstIndex&&index==1){
                 Marker targetMk = aMap.addMarker(mo);
+                targetPoi = new Poi(mo.getTitle(),mo.getPosition(),"");
                 targetMk.showInfoWindow();
                 isFirstIndex = true;
             }else {
@@ -167,7 +171,7 @@ public class LocationActivity extends AppCompatActivity implements
         query.setPageNum(currentPage);
         poiSearch = new PoiSearch(this, query);
         poiSearch.setOnPoiSearchListener(this);
-        poiSearch.setBound(new PoiSearch.SearchBound(startPoint, 1000));
+        poiSearch.setBound(new PoiSearch.SearchBound(new LatLonPoint(startLatlng.latitude,startLatlng.longitude), 2000));
         poiSearch.searchPOIAsyn();
     }
 
@@ -192,17 +196,56 @@ public class LocationActivity extends AppCompatActivity implements
             default:
         }
     }
+    //导航
+    @Override
+    public void onInitNaviFailure() {
+
+    }
+
+    @Override
+    public void onGetNavigationText(String s) {
+
+    }
+
+    @Override
+    public void onLocationChange(AMapNaviLocation aMapNaviLocation) {
+
+    }
+
+    @Override
+    public void onArriveDestination(boolean b) {
+
+    }
+
+    @Override
+    public void onStartNavi(int i) {
+
+    }
+
+    @Override
+    public void onCalculateRouteSuccess(int[] ints) {
+
+    }
+
+    @Override
+    public void onCalculateRouteFailure(int i) {
+
+    }
+
+    @Override
+    public void onStopSpeaking() {
+
+    }
 
     //定位
     private class myLocationChangeListener implements AMap.OnMyLocationChangeListener{
 
         @Override
         public void onMyLocationChange(Location location) {
-            startPoint = new LatLonPoint(location.getLatitude(),location.getLongitude());
+            startLatlng = new LatLng(location.getLatitude(),location.getLongitude());
             if (!isCameraSet) {
                 aMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                        new LatLng(location.getLatitude(), location.getLongitude()), 15, 15, 0
-                )));
+                        new LatLng(location.getLatitude(), location.getLongitude()), 14.5f, 15, 0)));
                 isCameraSet = true;
             }
             findPark();
