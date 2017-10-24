@@ -1,9 +1,7 @@
 package com.lhaojing.park.View;
 
 import android.Manifest;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -16,10 +14,11 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.amap.api.maps.AMap;
+import com.amap.api.maps.AMapOptions;
 import com.amap.api.maps.AMapUtils;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.MapView;
-import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.CameraPosition;
 import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
@@ -35,8 +34,8 @@ import com.amap.api.services.core.LatLonPoint;
 import com.amap.api.services.core.PoiItem;
 import com.amap.api.services.poisearch.PoiResult;
 import com.amap.api.services.poisearch.PoiSearch;
-import com.amap.api.services.route.RouteSearch;
 import com.lhaojing.park.R;
+import com.lhaojing.park.Utils.SpeechUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,6 +48,7 @@ public class LocationActivity extends AppCompatActivity implements
     private MapView mMapView = null;
     private MyLocationStyle myLocationStyle;
     private AMap aMap;
+    private UiSettings mUiSettings;
     //停车场检索
     private PoiSearch.Query query;
     private PoiSearch poiSearch;
@@ -65,7 +65,7 @@ public class LocationActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_location);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -73,7 +73,7 @@ public class LocationActivity extends AppCompatActivity implements
             public void onClick(View view) {
                 Poi start = new Poi("我的位置", startLatlng, "");
                 if(targetPoi!=null)
-                AmapNaviPage.getInstance().showRouteActivity(getApplicationContext(), new AmapNaviParams(start, null, targetPoi, AmapNaviType.DRIVER), LocationActivity.this);
+                AmapNaviPage.getInstance().showRouteActivity(getApplicationContext(), new AmapNaviParams(start, null , targetPoi, AmapNaviType.DRIVER), LocationActivity.this);
             }
         });
 
@@ -119,6 +119,11 @@ public class LocationActivity extends AppCompatActivity implements
         aMap.setOnMarkerClickListener(markerClickListener);
         aMap.setTrafficEnabled(true);
         aMap.setMyLocationEnabled(true);
+        //UI
+        mUiSettings = aMap.getUiSettings();
+        mUiSettings.setScaleControlsEnabled(true);
+        mUiSettings.setZoomControlsEnabled(false);
+        mUiSettings.setLogoPosition(AMapOptions.LOGO_POSITION_BOTTOM_LEFT);
     }
 
     AMap.OnMarkerClickListener markerClickListener = new AMap.OnMarkerClickListener() {
@@ -204,7 +209,7 @@ public class LocationActivity extends AppCompatActivity implements
 
     @Override
     public void onGetNavigationText(String s) {
-
+        SpeechUtils.getInstance(this).speakText(s);
     }
 
     @Override
@@ -245,7 +250,7 @@ public class LocationActivity extends AppCompatActivity implements
             startLatlng = new LatLng(location.getLatitude(),location.getLongitude());
             if (!isCameraSet) {
                 aMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(
-                        new LatLng(location.getLatitude(), location.getLongitude()), 14.5f, 15, 0)));
+                        new LatLng(location.getLatitude(), location.getLongitude()), 15f, 15, 0)));
                 isCameraSet = true;
             }
             findPark();

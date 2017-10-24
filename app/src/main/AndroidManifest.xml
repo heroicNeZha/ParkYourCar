@@ -39,6 +39,8 @@
         <activity android:name="com.amap.api.navi.AmapRouteActivity"
             android:theme="@android:style/Theme.NoTitleBar"
             android:configChanges="orientation|keyboardHidden|screenSize" />
+
+        <service android:name="com.amap.api.location.APSService"></service>
     </application>
 
 </manifest>
